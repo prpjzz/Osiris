@@ -20,6 +20,11 @@ jobs:
     - name: Build
       shell: cmd
       run: msbuild Osiris.sln /p:Platform=x64 /p:Configuration=${{ matrix.configuration }} ${{ env.toolset }}
+    - name: upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Osiris_${{ matrix.os }}_msbuild_${{ matrix.toolset }}_${{ matrix.configuration }}
+        path: x64\${{ matrix.configuration }}\Osiris.dll
 
   cmake:
     runs-on: ${{ matrix.os }}
