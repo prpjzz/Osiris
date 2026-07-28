@@ -10,12 +10,14 @@
 #include <OutlineGlow/GlowSceneObjectState.h>
 #include <GameClient/DLLs/Tier0Dll.h>
 #include <GameClient/Entities/EntityClassifier.h>
+#include <Features/Common/InWorldPanelsPerHookState.h>
 #include <Features/Common/RenderingHookEntityLoop.h>
 #include <Features/Sound/Details/SoundWatcher.h>
 #include <Features/Common/InWorldPanelsState.h>
 #include <Features/FeaturesStates.h>
 #include <Features/Visuals/ModelGlow/Preview/PlayerModelGlowPreviewState.h>
 #include <Features/Visuals/ModelGlow/Preview/WeaponModelGlowPreviewState.h>
+#include <Features/Visuals/PlayerInfoInWorld/PlayerInfoPanelCachePerHookState.h>
 #include <Features/Visuals/PlayerInfoInWorld/PlayerInfoPanelCacheState.h>
 #include <MemoryPatterns/AllMemoryPatternSearchResults.h>
 #include <MemoryPatterns/MemoryPatterns.h>
@@ -44,7 +46,7 @@ struct FullGlobalContext {
         : patternSearchResults{memoryPatterns}
         , fileNameSymbolTableState{tier0Dll}
         , memAllocState{tier0Dll}
-        , stylePropertySymbolsAndVMTs{StylePropertySymbolMap{memoryPatterns.panelStylePatterns().stylePropertiesSymbols()}, VmtFinder{panoramaDLL.getVmtFinderParams()}}
+        , stylePropertySymbolsAndVMTs{StylePropertySymbolMap{patternSearchResults.get<PointerToStylePropertySymbols>()}, VmtFinder{panoramaDLL.getVmtFinderParams()}}
         , hooks{
             peepEventsHook,
             patternSearchResults.get<ViewRenderPointer>(),
@@ -73,4 +75,6 @@ struct FullGlobalContext {
     PlayerInfoPanelCacheState playerInfoPanelCacheState;
     PlayerModelGlowPreviewState playerModelGlowPreviewState;
     WeaponModelGlowPreviewState weaponModelGlowPreviewState;
+    InWorldPanelsPerHookState inWorldPanelsPerHookState;
+    PlayerInfoPanelCachePerHookState playerInfoPanelCachePerHookState;
 };
