@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Features/Common/InWorldPanels.h>
-#include <Features/Common/FeatureToggle.h>
 #include <GameClient/WorldToScreen/WorldToClipSpaceConverter.h>
 #include <Hooks/ViewRenderHook.h>
 
@@ -20,8 +19,7 @@ public:
 
     void drawPlayerInformation(auto&& playerPawn) noexcept
     {
-        auto&& condition = context().condition();
-        if (!condition.shouldRun() || !condition.shouldDrawInfoOnPawn(playerPawn))
+        if (!shouldRun() || !shouldDrawInfoOnPawn(playerPawn))
             return;
 
         const auto absOrigin = playerPawn.absOrigin();
@@ -41,6 +39,20 @@ private:
     [[nodiscard]] decltype(auto) context() const noexcept
     {
         return hookContext.template make<PlayerInfoInWorldContext>();
+    }
+
+    [[nodiscard]] bool shouldRun() const noexcept
+    {
+        return context().config().template getVariable<player_info_vars::Enabled>();
+    }
+
+    [[nodiscard]] bool shouldDrawInfoOnPawn(auto&& playerPawn) const noexcept
+    {
+        return playerPawn.isAlive().value_or(true)
+            && playerPawn.health().greaterThan(0).valueOr(true)
+            && !playerPawn.isControlledByLocalPlayer()
+            && playerPawn.isTTorCT()
+            && (!context().config().template getVariable<player_info_vars::OnlyEnemies>() || playerPawn.isEnemy().value_or(true));
     }
 
     HookContext& hookContext;
